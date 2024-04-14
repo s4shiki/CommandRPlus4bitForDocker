@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "8888:8888"  # Jupyter Notebook
+      - "7860:7860"  # Gradio
+    volumes:
+      - .:/app
+    environment:
+      - MODEL_NAME=CohereForAI/c4ai-command-r-plus-4bit
+      - CUDA_VISIBLE_DEVICES=1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
+    command: >
+      bash -c "jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' &
+               python3 -u app.py"
